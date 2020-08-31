@@ -1,6 +1,5 @@
 # Send-To-Saber
-Command line application to send a file to Open-Core saber
-
+Command line application to send a file to Open-Core saber.
 
 ## Lazarus IDE/Free Pascal
   https://www.lazarus-ide.org/index.php?page=downloads

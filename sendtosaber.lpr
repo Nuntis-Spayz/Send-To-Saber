@@ -183,11 +183,11 @@ begin
 
       AssignFile(datFile, fullname);
       Reset(datFile);
-
+      writeLn('Filesize is:'+IntToStr(FileSize(datFile)));
       ser.SendString('WR='+ExtractFileName(fullname)+','+IntToStr(FileSize(datFile))+#10);
       inp:= ser.RecvTerminated(2500,#10);
       writeLn(inp);
-      if inp.StartsWith('OK, Write') then
+      if inp.StartsWith('OK, Write ') then
       begin
         While not eof(datfile) do
         begin
@@ -309,11 +309,12 @@ begin
     writeLn('No Parameters, minimum filename required.');
     writeln('');
   end;
-  writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -s --silent] [comX:] <filename.ext>');
+  //writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -s --silent] [comX:] <filename.ext>');
+  //writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -s --silent] <filename.ext>');
   writeln('-h --help       -- show this help');
-  writeln('-v              -- display version no.');
+  writeln('-v --version    -- display version no.');
   writeln('-s --silent     -- do not wait for a key at the end');
-  writeln('comX:           -- use the specified serial com port');
+  //writeln('comX:           -- use the specified serial com port');
   writeln('<filename.ext>  -- send the named file');
 end;
 

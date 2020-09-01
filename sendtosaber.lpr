@@ -29,14 +29,16 @@ type
     function GetPorts() : TStringList;
     procedure doErase(port : String);
     procedure sendFile(port, fname : String);
+    function VerifyPort(port:String):boolean;
   end;
 
 { TSendToSaber }
 
 procedure TSendToSaber.DoRun;
 var
-  //ErrorMsg: String;
   foundPorts : TStringList;
+  usePort : String;
+  i : Integer;
 begin
   // quick check parameters
   { ErrorMsg:=CheckOptions('h', 'help');
@@ -75,6 +77,7 @@ begin
   WriteVersion(false);
 
   { add your program here }
+  usePort:='';
   foundPorts:=getPorts();
 
   if foundPorts.Count=0 then
@@ -86,19 +89,47 @@ begin
     if foundPorts.Count=1 then
     begin
       writeln('Found 1 Saber Port: '+foundPorts.Strings[0]);
-      writeln('');
-      if HasOption('erase-all') then
-      begin
-       doErase(foundPorts.Strings[0]);
-      end
-      else
-       sendFile(foundPorts.Strings[0],ParamStr(ParamCount));
+      writeLn('Verifying Port is a saber.');
     end
     else
     begin
       writeln('Found '+IntToStr(foundPorts.Count)+' Saber Ports.');
-      writeln('');
-      writeln('Please run again and specify Port...');
+      writeln('Scanning Ports to find an Open-Core Saber.');
+    end;
+    writeln('');
+
+     i := 0;
+     while usePort.IsEmpty and (i < foundPorts.Count) do
+     begin
+       writeLn('Testing Port: '+foundPorts.Strings[i]);
+       if VerifyPort(foundPorts.Strings[i]) then
+       begin
+         usePort:=foundPorts.Strings[i];
+         writeLn('Port '+foundPorts.Strings[i]+' is a writable Open-Core Saber.');
+       end
+       else
+       begin
+         writeLn('Port '+foundPorts.Strings[i]+' not a writable Open-Core Saber');
+       end;
+       inc(i);
+    end;
+    foundPorts.Free;
+
+    if Not(usePort.IsEmpty) then
+    begin
+      if HasOption('erase-all') then
+      begin
+        doErase(usePort);
+      end
+      else
+      begin
+       sendFile(usePort,ParamStr(ParamCount));
+      end;
+    end
+    else
+    begin
+      writeln('No Writable Open-Core Sabers Found.');
+      writeln('Connect an Open-Core Saber with Updated Firmware.');
     end;
   end;
 
@@ -127,7 +158,71 @@ begin
 end;
 
 procedure TSendToSaber.doErase(port : String);
+var
+  inp : String;
+  inbyte : Byte;
+  ser : TBlockSerial;
+  counter : Integer;
 begin
+  ser:= TBlockSerial.Create;
+  try
+    ser.Connect(port.Trim([':',' ']));
+    ser.config(115200, 8, 'N', SB1, False, False);
+
+    writeln('Querying Saber');
+    writeln('--------------');
+    ser.SendString('V?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    if Not(inp.IsEmpty) then writeLn(inp);
+
+    ser.SendString('S?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    if Not(inp.IsEmpty) then writeLn(inp);
+
+
+    ser.SendString('WR?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    if inp='OK, Write Ready' then
+    begin
+      ser.SendString('ERASE=ALL'+#10);
+      inp:= ser.RecvTerminated(500,#10);
+      writeLn(inp);
+
+      counter:=0;
+      inbyte := ser.RecvByte(5000);
+      while (counter<5) and ((ser.LastError=Synaser.ErrTimeout) or (inbyte<65)) do
+      begin
+        inc(counter);
+        if Not(ser.LastError=Synaser.ErrTimeout) then
+        begin
+          if inbyte=10 then
+            writeLn('')
+          else
+            write(chr(inbyte));
+          counter:=0
+        end;
+        inbyte := ser.RecvByte(5000);
+      end;
+      if Not(ser.LastError=Synaser.ErrTimeout) then
+           write(chr(inbyte));
+      if counter>=5 then
+        writeLn('ERROR, Communication Timed out...');
+
+      inp:= ser.RecvTerminated(500,#10);
+      writeLn(inp);
+      inp:= ser.RecvTerminated(500,#10);
+      writeLn(inp);
+
+    end
+    else
+    begin
+      writeln('Saber Not Ready to Write File, aborting.');
+    end;
+
+    ser.CloseSocket;
+  finally
+    ser.free;
+  end;
 
 end;
 
@@ -173,7 +268,7 @@ begin
     ser.SendString('WR?'+#10);
     //ser.Flush;
     inp:= ser.RecvTerminated(500,#10);
-    if (ver>'1.') and (inp='OK, Write Ready') then
+    if (ver>'V=1.') and (inp='OK, Write Ready') then
     begin
       writeln(inp);
       writeln('Saber Ready to Write to Serial Fash');
@@ -288,6 +383,41 @@ begin
   end;
 end;
 
+function TSendToSaber.VerifyPort(port:String):boolean;
+var
+  inp : String;
+  ser : TBlockSerial;
+begin
+  VerifyPort:=True;
+
+  ser:= TBlockSerial.Create;
+  try
+    ser.Connect(port.Trim([':',' ']));
+    ser.config(115200, 8, 'N', SB1, False, False);
+
+    ser.SendString('V?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    if inp.IsEmpty or (inp<'V=1.') then VerifyPort:=False;
+
+    if VerifyPort then
+    begin
+      ser.SendString('S?'+#10);
+      inp:= ser.RecvTerminated(500,#10);
+      if inp.IsEmpty or Not(inp.StartsWith('S=')) then VerifyPort:=False;
+
+      if VerifyPort then
+      begin
+        WriteLn('VerifyPort (11)');
+        ser.SendString('WR?'+#10);
+        inp:= ser.RecvTerminated(500,#10);
+        if inp.IsEmpty or Not(inp.StartsWith('OK, Write ')) then VerifyPort:=False;
+      end;
+    end;
+    ser.CloseSocket;
+  finally
+    ser.free;
+  end;
+end;
 procedure TSendToSaber.WriteHelp;
 var
  FileVerInfo: TFileVersionInfo;
@@ -309,13 +439,12 @@ begin
     writeLn('No Parameters, minimum filename required.');
     writeln('');
   end;
-  //writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -s --silent] [comX:] <filename.ext>');
-  //writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -s --silent] <filename.ext>');
-  writeln('-h --help       -- show this help');
-  writeln('-v --version    -- display version no.');
-  writeln('-s --silent     -- do not wait for a key at the end');
-  //writeln('comX:           -- use the specified serial com port');
-  writeln('<filename.ext>  -- send the named file');
+  writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -s -erase-all] <filename.ext>');
+  writeln('  -h --help       -- show this help');
+  writeln('  -v --version    -- display version no.');
+  writeln('  -s --silent     -- do not wait for a key at the end');
+  writeln('  -erase-all      -- erase the serial flash');
+  writeln('  <filename.ext>  -- send the named file');
 end;
 
 var

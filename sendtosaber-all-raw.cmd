@@ -1,4 +1,4 @@
-sendtosaber_x64.exe -erase-all
+sendtosaber_x64.exe -s -erase-all
 
 sendtosaber_x64.exe -s CLASH_1_0.RAW
 sendtosaber_x64.exe -s CLASH_2_0.RAW

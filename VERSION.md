@@ -2,6 +2,13 @@
 
 ## Application Features
 * send a file to an open-core saber
+* read file list from saber
+* read saber info
+
+### 0.1.0.07
+* added -l -list option to list files on the saber
+* added -i -info option to read version and serial no from saber
+* added a free space check when uploading files to saber
 
 ### 0.1.0.04
 * implemented -erase-all command

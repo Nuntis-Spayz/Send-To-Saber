@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="4"/>
+      <BuildNr Value="7"/>
       <Language Value="0809"/>
       <StringTable CompanyName="sabers.amazer.uk" FileDescription="sendtosaber" InternalName="Send-To-Saber" OriginalFilename="sendtosaber.exe" ProductName="Send-To-Saber"/>
     </VersionInfo>

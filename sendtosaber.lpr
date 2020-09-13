@@ -29,6 +29,9 @@ type
     function GetPorts() : TStringList;
     procedure doErase(port : String);
     procedure sendFile(port, fname : String);
+    procedure saberInfo(port : String);
+    procedure listFiles(port : String);
+    procedure keyFinish();
     function VerifyPort(port:String):boolean;
   end;
 
@@ -65,12 +68,7 @@ begin
   if HasOption('v', 'version') then
   begin
     WriteVersion(true);
-    if Not(HasOption('s', 'silent')) then
-    begin
-      writeln('');
-      writeln('==PRESS ANY KEY TO FINISH==');
-      WaitKey;
-    end;
+    keyFinish();
     Terminate;
     Exit;
   end;
@@ -121,6 +119,14 @@ begin
       begin
         doErase(usePort);
       end
+      else if HasOption('i','info') then
+      begin
+        saberInfo(usePort);
+      end
+      else if HasOption('l','list') then
+      begin
+        listFiles(usePort);
+      end
       else
       begin
        sendFile(usePort,ParamStr(ParamCount));
@@ -133,15 +139,7 @@ begin
     end;
   end;
 
-  { possible press a key to terminate }
-  if Not(HasOption('s', 'silent')) then
-  begin
-    writeln('');
-    writeln('==END==');
-    writeln('==PRESS ANY KEY TO FINISH==');
-    WaitKey;
-  end;
-
+  keyFinish();
   // stop program loop
   Terminate;
 end;
@@ -156,6 +154,77 @@ destructor TSendToSaber.Destroy;
 begin
   inherited Destroy;
 end;
+
+procedure TSendToSaber.saberInfo(port : String);
+var
+  inp : String;
+  ser : TBlockSerial;
+begin
+  ser:= TBlockSerial.Create;
+  try
+    ser.Connect(port.Trim([':',' ']));
+    ser.config(115200, 8, 'N', SB1, False, False);
+
+    writeln('Querying Saber');
+    writeln('--------------');
+    ser.SendString('V?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    if Not(inp.IsEmpty) then writeLn(inp);
+
+    ser.SendString('S?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    if Not(inp.IsEmpty) then writeLn(inp);
+
+    ser.CloseSocket;
+  finally
+    ser.free;
+  end;
+
+end;
+
+procedure TSendToSaber.keyFinish();
+begin
+  { possible press a key to terminate }
+  if Not(HasOption('s', 'silent')) then
+  begin
+    writeln('');
+    writeln('==END==');
+    writeln('==PRESS ANY KEY TO FINISH==');
+    WaitKey;
+  end;
+end;
+
+procedure TSendToSaber.listFiles(port : String);
+var
+  inp : String;
+  ser : TBlockSerial;
+begin
+  ser:= TBlockSerial.Create;
+  try
+    ser.Connect(port.Trim([':',' ']));
+    ser.config(115200, 8, 'N', SB1, False, False);
+
+    writeln('Querying Saber');
+    writeln('--------------');
+    ser.SendString('V?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    if Not(inp.IsEmpty) then writeLn(inp);
+
+    ser.SendString('LIST?'+#10);
+    inp:= ser.RecvTerminated(500,#10);
+    while Not(inp.IsEmpty) do
+    begin
+      writeLn(inp);
+      inp:= ser.RecvTerminated(500,#10);
+    end;
+
+    ser.CloseSocket;
+  finally
+    ser.free;
+  end;
+
+end;
+
 
 procedure TSendToSaber.doErase(port : String);
 var
@@ -233,6 +302,7 @@ var
   ser : TBlockSerial;
   datFile : File of Byte;
   rByte : Byte;
+  freespace, fsize : LongInt;
 begin
   fullname:='';
   if FileExists(fname) then
@@ -271,14 +341,43 @@ begin
     if (ver>'V=1.') and (inp='OK, Write Ready') then
     begin
       writeln(inp);
-      writeln('Saber Ready to Write to Serial Fash');
+      writeln('Saber Ready to Write to Serial Flash');
       writeLn('');
-      writeln('Sending: '+fullname+' to '+port);
-      writeln('as Serial Flash Name: '+ExtractFileName(fullname));
 
       AssignFile(datFile, fullname);
       Reset(datFile);
-      writeLn('Filesize is:'+IntToStr(FileSize(datFile)));
+      freespace:=-1;
+      fsize:=FileSize(datFile);
+
+      ser.SendString('FREE?'+#10);
+      inp:= ser.RecvTerminated(500,#10);
+      if inp.StartsWith('FREE=') then
+      begin
+        writeLn(inp);
+        freespace:=StrToInt(inp.Substring(5));
+
+        if freespace<fsize then
+        begin
+          writeLn('Space on Saber: '+IntToStr(freespace));
+          writeLn('Filesize: '+IntToStr(fsize));
+          writeLn('');
+          writeLn('ERROR.');
+          writeLn('Insufficient Space on saber, ERASE-ALL and re-upload all files.');
+          writeLn('');
+          ser.CloseSocket;
+          keyFinish();
+          Terminate(1);
+        end;
+
+      end;
+
+      writeLn('');
+      writeln('Sending: '+fullname+' to '+port);
+      writeln('as Serial Flash Name: '+ExtractFileName(fullname));
+      if freespace>0 then
+         writeLn('Space on Saber: '+IntToStr(freespace));
+      writeLn('Filesize: '+IntToStr(fsize));
+
       ser.SendString('WR='+ExtractFileName(fullname)+','+IntToStr(FileSize(datFile))+#10);
       inp:= ser.RecvTerminated(2500,#10);
       writeLn(inp);
@@ -407,7 +506,6 @@ begin
 
       if VerifyPort then
       begin
-        WriteLn('VerifyPort (11)');
         ser.SendString('WR?'+#10);
         inp:= ser.RecvTerminated(500,#10);
         if inp.IsEmpty or Not(inp.StartsWith('OK, Write ')) then VerifyPort:=False;
@@ -439,9 +537,11 @@ begin
     writeLn('No Parameters, minimum filename required.');
     writeln('');
   end;
-  writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -s -erase-all] <filename.ext>');
+  writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -i -l -s -erase-all] <filename.ext>');
   writeln('  -h --help       -- show this help');
   writeln('  -v --version    -- display version no.');
+  writeln('  -i --info       -- read saber firmware version and serial no.');
+  writeln('  -l --list       -- list all files on saber');
   writeln('  -s --silent     -- do not wait for a key at the end');
   writeln('  -erase-all      -- erase the serial flash');
   writeln('  <filename.ext>  -- send the named file');

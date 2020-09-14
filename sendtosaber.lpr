@@ -6,7 +6,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, SysUtils, CustApp
+  Classes, SysUtils, CustApp, DateUtils
   , crt, fileinfo, registry, Synaser
   , winpeimagereader {need this for reading exe info}
   //, elfreader {needed for reading ELF executables}
@@ -302,7 +302,9 @@ var
   ser : TBlockSerial;
   datFile : File of Byte;
   rByte : Byte;
-  freespace, fsize : LongInt;
+  freespace, fsize, ctr,diff : LongInt;
+  tStart : TDateTime;
+  sTime : String;
 begin
   fullname:='';
   if FileExists(fname) then
@@ -353,7 +355,6 @@ begin
       inp:= ser.RecvTerminated(500,#10);
       if inp.StartsWith('FREE=') then
       begin
-        writeLn(inp);
         freespace:=StrToInt(inp.Substring(5));
 
         if freespace<fsize then
@@ -371,13 +372,14 @@ begin
 
       end;
 
-      writeLn('');
       writeln('Sending: '+fullname+' to '+port);
       writeln('as Serial Flash Name: '+ExtractFileName(fullname));
       if freespace>0 then
          writeLn('Space on Saber: '+IntToStr(freespace));
       writeLn('Filesize: '+IntToStr(fsize));
 
+      tStart := Time;
+      ctr:=fsize;
       ser.SendString('WR='+ExtractFileName(fullname)+','+IntToStr(FileSize(datFile))+#10);
       inp:= ser.RecvTerminated(2500,#10);
       writeLn(inp);
@@ -387,8 +389,34 @@ begin
         begin
           read(datFile, rByte);
           ser.SendByte(rByte);
+          dec(ctr);
+          // we update the count and est time only every few hundred bytes
+          if (ctr and 511)=1 then
+          begin
+           write('Remaining, Bytes: '+IntToStr(ctr)+', ');
+
+           if (ctr and 4095)=1 then
+           begin
+           diff:=DateUtils.MilliSecondsBetween(Time, tStart);
+           diff:= (ctr * diff) div (1000 * (fsize-ctr));
+           sTime:=IntToStr(diff div 360)+':';
+           diff:= diff - 360 * (diff div 360);
+           if diff<600 then
+             sTime:=sTime+'0';
+           sTime:=sTime+IntToStr(diff div 60)+':';
+           diff:= diff - 60 * (diff div 60);
+           if diff<10 then
+             sTime:=sTime+'0';
+           sTime:=sTime+IntToStr(diff);
+
+           write('Time '+sTime+'  ');
+
+           end;
+           write(#13);
+          end;
         end;
       end;
+      writeLn(#13+'                                                  '+#13);
       inp:= ser.RecvTerminated(500,#10);
       writeLn(inp);
 

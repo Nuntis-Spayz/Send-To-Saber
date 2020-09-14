@@ -5,6 +5,9 @@
 * read file list from saber
 * read saber info
 
+### 0.1.0.10
+* added bytes counter and est time remaining for file uploads
+
 ### 0.1.0.07
 * added -l -list option to list files on the saber
 * added -i -info option to read version and serial no from saber

@@ -8,6 +8,12 @@ Command line application to send a file to Open-Core saber.
     -erase-all      -- erase the serial flash
     <filename.ext>  -- send the named file
 
+## Open-Saber Sound Toolkit
+  This 7zip (and self-extracting 7zip) contain the send-to-saber binary files 
+  and with the "sox" utility for converting sounds. Along with the original 
+  Open-Core Saber sound fonts and several OpenSource (Creative Commons) 
+  sound fonts with a README with uploading instructions. 
+
 ## Lazarus IDE/Free Pascal
   https://www.lazarus-ide.org/index.php?page=downloads
   

@@ -2,10 +2,11 @@
 
 ## Application Features
 * send a file to an open-core saber
+* erase-all files on saber
 * read file list from saber
 * read saber info
 
-### 0.1.0.10
+### 0.1.0.10  (tooolkit v6)
 * added bytes counter and est time remaining for file uploads
 
 ### 0.1.0.07

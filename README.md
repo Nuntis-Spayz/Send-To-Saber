@@ -15,6 +15,10 @@ Command line application to send a file to Open-Core saber.
   and with the "sox" utility for converting sounds. Along with the original 
   Open-Core Saber sound fonts and several OpenSource (Creative Commons) 
   sound fonts with a README with uploading instructions. 
+  
+  sox is available under the GPL2.0 at
+  http://sox.sourceforge.net/
+  https://sourceforge.net/projects/sox/
 
 ## Lazarus IDE/Free Pascal
   https://www.lazarus-ide.org/index.php?page=downloads

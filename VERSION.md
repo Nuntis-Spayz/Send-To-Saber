@@ -5,8 +5,13 @@
 * erase-all files on saber
 * read file list from saber
 * read saber info
+* cross-platform Windows and MAC-OS
 
-### 0.1.0.10  (tooolkit v6)
+### 0.1.0.11  (tooolkit r7)
+* MAC-OS version of send-to0-saber command
+* toolkit r7 now cross platform compatible (MAC-OS and Windows)
+
+### 0.1.0.10  (tooolkit r6)
 * added bytes counter and est time remaining for file uploads
 
 ### 0.1.0.07

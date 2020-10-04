@@ -1,7 +1,7 @@
 # Send-To-Saber
 Command line application to send a file to Open-Core saber.
 
-    Usage: sendtosaber_x64.exe [-h -v -i -l -s -erase-all] <filename.ext>
+    Usage: sendtosaber [-h -v -i -l -s -erase-all] <filename.ext>
     -h --help       -- show this help
     -v --version    -- display version no.
     -i --info       -- read saber firmware version and serial no.
@@ -14,8 +14,12 @@ Command line application to send a file to Open-Core saber.
   This 7zip (and self-extracting 7zip) contain the send-to-saber binary files 
   and with the "sox" utility for converting sounds. Along with the original 
   Open-Core Saber sound fonts and several OpenSource (Creative Commons) 
-  sound fonts with a README with uploading instructions. 
-  
+  sound fonts with a README with uploading instructions.
+
+  The 7zip version contains both MAC-OS and Windows executables for the toolkit.
+  (The only variance between SFX r6 and 7zip r7 is the inclusion of the MAC-OS 
+  binaries in the 7zip archive version of the toolkit.)
+
   sox is available under the GPL2.0 at
   http://sox.sourceforge.net/
   https://sourceforge.net/projects/sox/
@@ -32,6 +36,6 @@ Command line application to send a file to Open-Core saber.
      the 64 bit cross compiler.
 
 Once up and running, before you open the project you will have to use 
-the online pacakage manager, in the Lazarus IDE, to install the following packages
+the online package manager, in the Lazarus IDE, to install the following packages
 
 * Requires Package "Synapse 40.1" - for unit Synaser - serial port access

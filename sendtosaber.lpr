@@ -450,39 +450,59 @@ end;
 
 function TSendToSaber.GetPorts(): TStringList;
 var
+  {$IF defined(MSWindows)}
   Reg:TRegistry;
+  {$elseif defined(DARWIN)}
+  SearchResult  : TSearchRec;
+  {$ENDIF}
   rs, cs: String;
   ls : TStringList;
   i: Integer;
 begin
- writeln('Searching for Saber Ports...');
+  writeln('Searching for Saber Ports...');
+  ls := TStringList.Create;
 
+  {$IF defined(MSWindows)}
   // code for all kinds of windows
- ls := TStringList.Create;
- Reg := TRegistry.Create;
- try
-   Reg.RootKey := HKEY_LOCAL_MACHINE;
-   if Reg.OpenKeyReadOnly('HARDWARE\DEVICEMAP\SERIALCOMM') then
-   begin
-     for i:=0 to 99 do
-     begin
-       // both anima and opencore present as --> \Device\USBSER000
-       rs:='\Device\USBSER' + InttoStr(I).PadLeft(3,'0');
+  Reg := TRegistry.Create;
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKeyReadOnly('HARDWARE\DEVICEMAP\SERIALCOMM') then
+    begin
+      for i:=0 to 99 do
+      begin
+        // both anima and opencore present as --> \Device\USBSER000
+        rs:='\Device\USBSER' + InttoStr(I).PadLeft(3,'0');
 
-       //Memo1.Append(rs);
-       if (reg.ValueExists(rs))then
-       begin
-         cs:= reg.ReadString(rs);
-         ls.AddText(cs);
-         writeln(cs+' : '+rs);
-       end;
-     end;
+        //Memo1.Append(rs);
+        if (reg.ValueExists(rs))then
+        begin
+          cs:= reg.ReadString(rs);
+          ls.AddText(cs);
+          writeln(cs+' : '+rs);
+        end;
+      end;
+    end;
+  finally
+    Reg.Free;
+  end;
+  {$elseif defined(DARWIN)}
+  // mac os code to be done, fetch list of ports
+  // List the files
+  //Memo1.Append('Searching for devices');
+  if FindFirst('/dev/cu*.*', faAnyFile, SearchResult)=0 then
+  repeat
+    rs := SearchResult.Name;
+    if rs.StartsWith('cu.usb') then
+    begin
+      rs:='/dev/'+rs;
+      ls.AddText(rs);
+    end;
+  until FindNext(SearchResult)<>0;
+  FindClose(SearchResult);
+  {$ENDIF}
 
-   end;
-   finally
-     Reg.Free;
-   end;
-   GetPorts:=ls;
+  GetPorts:=ls;
 end;
 
 procedure TSendToSaber.WriteVersion(all: boolean);

@@ -5,7 +5,7 @@ echo "  Build 7zip Archive of Windows & Sample Sound Fonts"
 echo ------------------------------------------------------------------
 echo.
 
-set file=Open-Saber-Sound-Toolkit-r8
+set file=Open-Saber-Sound-Toolkit-r9
 
 del %file%.7z
 del %file%-SFX.exe

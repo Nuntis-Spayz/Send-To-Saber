@@ -10,6 +10,10 @@ Command line application to send a file to Open-Core saber.
     -erase-all      -- erase the serial flash
     <filename.ext>  -- send the named file
 
+
+See https://github.com/LamaDiLuce/polaris-opencore for the firmware
+with which this software is designed to communicate/control.
+
 ## Open-Saber Sound Toolkit
   The toolkit is a means to bundle the send-to-saber command line along with 
   sevaral batch files, the "sox" utility for converting sounds and the original 

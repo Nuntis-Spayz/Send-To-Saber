@@ -1,6 +1,16 @@
+# binaries generated and re-include tools
+sendtosaber
+sendtosaber*.exe
+Open-Saber-Sound-Toolkit-r*.*
+#reinclude all files in tools
+!Open-Saber-Sound-Toolkit/bin-macos/
+!Open-Saber-Sound-Toolkit/bin-macos/*
+!Open-Saber-Sound-Toolkit/bin-win/
+!Open-Saber-Sound-Toolkit/bin-win/*
+!7z.exe
+
 # ---> Lazarus
 # Lazarus compiler-generated binaries (safe to delete)
-XX*.exe
 *.dll
 *.so
 *.dylib
@@ -41,7 +51,3 @@ devtools/macOS-64/
 # Application bundle for Mac OS
 XX*.app/
 .DS_Store
-
-#reinclude all files in tools
-!tools/
-!tools/*

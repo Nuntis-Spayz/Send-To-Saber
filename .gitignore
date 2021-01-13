@@ -3,11 +3,9 @@ sendtosaber
 sendtosaber*.exe
 Open-Saber-Sound-Toolkit-r*.*
 #reinclude all files in tools
-!Open-Saber-Sound-Toolkit/bin-macos/
-!Open-Saber-Sound-Toolkit/bin-macos/*
-!Open-Saber-Sound-Toolkit/bin-win/
-!Open-Saber-Sound-Toolkit/bin-win/*
 !7z.exe
+!sox.exe
+!wget.exe
 
 # ---> Lazarus
 # Lazarus compiler-generated binaries (safe to delete)

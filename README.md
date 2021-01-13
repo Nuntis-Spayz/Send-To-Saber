@@ -11,14 +11,10 @@ Command line application to send a file to Open-Core saber.
     <filename.ext>  -- send the named file
 
 ## Open-Saber Sound Toolkit
-  This 7zip (and self-extracting 7zip) contain the send-to-saber binary files 
-  and with the "sox" utility for converting sounds. Along with the original 
+  The toolkit is a means to bundle the send-to-saber command line along with 
+  sevaral batch files, the "sox" utility for converting sounds and the original 
   Open-Core Saber sound fonts and several OpenSource (Creative Commons) 
   sound fonts with a README with uploading instructions.
-
-  The 7zip version contains both MAC-OS and Windows executables for the toolkit.
-  (The only variance between SFX r6 and 7zip r7 is the inclusion of the MAC-OS 
-  binaries in the 7zip archive version of the toolkit.)
 
   sox is available under the GPL2.0 at
   http://sox.sourceforge.net/

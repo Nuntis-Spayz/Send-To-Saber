@@ -4,7 +4,7 @@ sendtosaber*.exe
 Open-Saber-Sound-Toolkit-r*.*
 *.dll
 #reinclude all files in tools
-!lib*.dll
+!Open-Saber-Sound-Toolkit/bin-win/*.dll
 !7z.exe
 !sox.exe
 !wget.exe

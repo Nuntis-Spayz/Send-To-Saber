@@ -16,14 +16,14 @@ The toolkit has a batch upload script/batch file to upload a complete set of sou
 
 The sendtosaber command can also query the saber and erase the memory
 
-Usage: sendtosaber [-h -v -i -l -s -erase-all] <filename.ext>
--h --help       -- show this help
--v --version    -- display version no.
--i --info       -- read saber firmware version and serial no.
--l --list       -- list all files on saber
--s --silent     -- do not wait for a key at the end
--erase-all      -- erase the serial flash
-<filename.ext>  -- send the named file
+    Usage: sendtosaber [-h -v -i -l -s -erase-all] <filename.ext>
+    -h --help       -- show this help
+    -v --version    -- display version no.
+    -i --info       -- read saber firmware version and serial no.
+    -l --list       -- list all files on saber
+    -s --silent     -- do not wait for a key at the end
+    -erase-all      -- erase the serial flash
+    <filename.ext>  -- send the named file
 
 Using the sendtosaber command you could manually send one file at a time.
 

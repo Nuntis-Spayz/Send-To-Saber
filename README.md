@@ -1,15 +1,23 @@
 # Send-To-Saber
 Command line application to send a file to Open-Core saber.
 
-    Usage: sendtosaber [-h -v -i -l -s -erase-all] <filename.ext>
-    -h --help       -- show this help
-    -v --version    -- display version no.
-    -i --info       -- read saber firmware version and serial no.
-    -l --list       -- list all files on saber
-    -s --silent     -- do not wait for a key at the end
-    -erase-all      -- erase the serial flash
-    <filename.ext>  -- send the named file
+Send-To-Saber
+----------------
+Version: 0.1.0.17
 
+No Parameters, minimum filename required.
+
+Usage: sendtosaber.exe [-h -v -i -l -s -t --trans=string -erase-all] <filename.ext>
+  -h   --help             -- show this help
+  -v   --version          -- display version no.
+  -i   --info             -- read saber firmware version and serial no.
+  -l   --list             -- list all files on saber
+  --slist                 -- list the arrays of sound filenames
+  -s   --silent           -- do not wait for a key at the end
+  -t string-to-send       -- send/transmit string to the saber & show responses
+  --trans=string-to-send  -- send/transmit string to the saber & show responses
+  -erase-all              -- erase the serial flash
+  <filename.ext>          -- send the named file to serial flash storage
 
 See https://github.com/LamaDiLuce/polaris-opencore for the firmware
 with which this software is designed to communicate/control.

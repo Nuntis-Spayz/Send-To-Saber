@@ -86,3 +86,41 @@ Current required filenames are
 * SWING_6_0.RAW
 * SWING_7_0.RAW
 * SWING_8_0.RAW
+
+## Upcoming Filename Lists
+
+ Upcoming Opencore firmware will allow you to specify filenames for each sound type
+ allowing you to specify a list of filenames for each sound type.
+ 
+ This will, for example, allow you to use the same sound as both a swing and a clash.
+ 
+ Have multiple on sounds picked at random
+ 
+ Detail a sound multiple time in a list to increase teh occurance of that one sound in the list
+ 
+ See the batch commands in the Example_MultiON folder
+ 
+ ..\bin\sendtosaber.exe -t sON=POWERON_0.RAW,ON_BARB.RAW,ON_DRAGON.RAW,ON_GALAXY.RAW
+
+ The communication caommands for setting a luist of uploaded filenames
+ sON=
+ sOFF=
+ sHUM=
+ sSW=
+ sCL=
+ 
+ To get the lists back from the saber
+ 
+ ..\bin\sendtosaber.exe -t sON?
+ 
+ sON?
+ sOFF?
+ sHUM?
+ sSW?
+ sCL?
+ 
+ For a proposed future protocol of paired smoothswing sounds
+ sSMA=
+ sSMA?
+ sSMB=
+ sSMB?

@@ -31,6 +31,7 @@ type
     procedure sendFile(port, fname : String);
     procedure saberInfo(port : String);
     procedure listFiles(port : String);
+    procedure transmit(port : String; cmd:String);
     procedure keyFinish();
     function VerifyPort(port:String):boolean;
   end;
@@ -41,6 +42,7 @@ procedure TSendToSaber.DoRun;
 var
   foundPorts : TStringList;
   usePort : String;
+  opt: String;
   i : Integer;
 begin
   // quick check parameters
@@ -127,6 +129,15 @@ begin
       begin
         listFiles(usePort);
       end
+      else if HasOption('t','trans') then
+      begin
+        opt:=GetOptionValue('t','trans');
+        transmit(usePort, opt);
+      end
+      else if HasOption('slist') then
+      begin
+        transmit(usePort, 'sON?'+#010+'sOFF?'+#010+'sHUM?'+#010+'sSW?'+#010+'sCL?'+#010+'sSMA?'+#010+'sSMB?');
+      end
       else
       begin
        sendFile(usePort,ParamStr(ParamCount));
@@ -191,6 +202,34 @@ begin
     writeln('==END==');
     writeln('==PRESS ANY KEY TO FINISH==');
     WaitKey;
+  end;
+end;
+
+procedure TSendToSaber.transmit(port : String; cmd:String);
+var
+  inp: String;
+  ser : TBlockSerial;
+begin
+  if(Not cmd.IsEmpty()) then
+  begin
+    ser:= TBlockSerial.Create;
+    try
+      ser.Connect(port.Trim([':',' ']));
+      ser.config(115200, 8, 'N', SB1, False, False);
+
+      ser.SendString(cmd+#10);
+
+      inp:= ser.RecvTerminated(500,#10);
+      while Not(inp.IsEmpty) do
+      begin
+        writeLn(inp);
+        inp:= ser.RecvTerminated(500,#10);
+      end;
+
+      ser.CloseSocket;
+    finally
+      ser.free;
+    end;
   end;
 end;
 
@@ -585,14 +624,17 @@ begin
     writeLn('No Parameters, minimum filename required.');
     writeln('');
   end;
-  writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -i -l -s -erase-all] <filename.ext>');
-  writeln('  -h --help       -- show this help');
-  writeln('  -v --version    -- display version no.');
-  writeln('  -i --info       -- read saber firmware version and serial no.');
-  writeln('  -l --list       -- list all files on saber');
-  writeln('  -s --silent     -- do not wait for a key at the end');
-  writeln('  -erase-all      -- erase the serial flash');
-  writeln('  <filename.ext>  -- send the named file');
+  writeln('Usage: ', ExtractFileName(ExeName), ' [-h -v -i -l -s -t --trans=string -erase-all] <filename.ext>');
+  writeln('  -h   --help             -- show this help');
+  writeln('  -v   --version          -- display version no.');
+  writeln('  -i   --info             -- read saber firmware version and serial no.');
+  writeln('  -l   --list             -- list all files on saber');
+  writeln('  --slist                 -- list the arrays of sound filenames');
+  writeln('  -s   --silent           -- do not wait for a key at the end');
+  writeln('  -t string-to-send       -- send/transmit string to the saber & show responses');
+  writeln('  --trans=string-to-send  -- send/transmit string to the saber & show responses');
+  writeln('  -erase-all              -- erase the serial flash');
+  writeln('  <filename.ext>          -- send the named file to serial flash storage');
 end;
 
 var

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Script Settings
-version=Open-Saber-Sound-Toolkit-r8
+version=Open-Saber-Sound-Toolkit-r10
 
 # Create DMG
 cd -- "$(dirname "$0")"
@@ -15,6 +15,8 @@ mkdir $version/bin/
 
 cp bin-macos/* $version/bin/
 cp -R Mongo1* $version/
+cp -R Mongo2* $version/
+cp -R Example* $version/
 cp -R OpenCore_OEM $version/
 cp *.md $version/
 rm $version/*/*.cmd

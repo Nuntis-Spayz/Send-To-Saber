@@ -17,33 +17,42 @@ sounds on the saber and then re-upload them this can take a considerable
 amount of time 15—20 minutes so do not run it until you are prepared to 
 let the saber and computer do their work for this amount of time.
 
-The three other Mongo1_<something> folders contain sample open-source 
-sound fonts Mongo1_Barbarian sounds are already converted into the 
-correct RAW sound format — again run the sendtosaber-all-raw and 
-it will erase all the sounds and upload this set (again it is not fast).
-
-The Dragon and Galaxy Blade folders contain WAV files — ie. not in the 
-correct RAW sound format - but with the correct file names.
+The other MongoX_<something> folders contain sample open-source 
+sound fonts.
 
 Running the command sox-convert-toRAW command 
   - Windows : "sox-convert-toRAW.cmd"
   - MAC OS  : "sox-convert-toRAW-macos.command"
 
-will convert the WAV files into the correct RAW format then once more 
-you can run the sendtosaber-all-raw to upload them to the saber.
+will convert all the WAV files in that directory into the correct RAW 
+format then you can run the sendtosaber-all-raw to upload them to the saber.
+
+The latest firmwares allow you to use any filenames you want for the files, 
+but you must then tell the saber which type of sound uses which filenames.
+
+ie. You must send a list of filesnames for each type of sound.
+
+In each of the Mong1_<something> folders there is also a switchtoXXXXSounds 
+command that sends to the saber the lists of which files are used for each
+type of sound.
+
+Sending lists of filenames means you can have any (up to 25) files for each 
+sound type (including on, off and hum).
+
+Also, because you cansend any filenames to the saber, if you remove the 
+erase-all command from the send to saber upload script the saber can have 
+multiple sets of sounds in the saber -- and using only the switchtoXXXSounds 
+script can switch between which soudns are actually active.
 
 So to upload your own sound font create a folder in the 
 "Open-Saber-Sound-Toolkit" folder, copy the two CMD (Windows) or 
 COMMAND (MAC-OS) files (from one of the example sound font folders) 
 into your new sound font folder so you can run them there.
 
-Then create the correct sound files with the EXACT same sound names as 
-in the original and examples - run the converter and/or the uploader
+If the file names are not the standard ones create a switchTO script to set 
+your custom filenames.
 
-You Must have a sound file for EVERY single sound required - if you 
-omit one the saber will play blank sounds occassionally.
-
-Length of sound files - the length of the sund files does not matter - 
+Length of sound files - the length of the sOund files does not matter - 
 but short swing sounds will result in multiple swing sounds being 
 played one after another (which may be noticable). Long power-on and 
 power-off sounds play, but the sound does not match the length of the 
@@ -64,7 +73,7 @@ should not lose any custom colour banks.
 Thr required format for sound files to upload to the saber is RAW 
 files with 16 bits and 44.1kHz
 
-Current required filenames are
+Older firmwares required filenames to be exactly
 * CLASH_1_0.RAW
 * CLASH_2_0.RAW
 * CLASH_3_0.RAW
@@ -87,7 +96,7 @@ Current required filenames are
 * SWING_7_0.RAW
 * SWING_8_0.RAW
 
-## Upcoming Filename Lists
+## Filename Type Lists
 
  Upcoming Opencore firmware will allow you to specify filenames for each sound type
  allowing you to specify a list of filenames for each sound type.

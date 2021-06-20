@@ -2,6 +2,13 @@
 
 ## VERSION
 
+### v10
+* send-to-saber command can now send any string to the saber
+* Specific command to list sound type lists
+* Any filenames allowed in latest firmware
+  But you must then also provide lists of which files are which type of sound
+* Improved Batch commands to parse the directory files for conversions and transfers
+
 ### v7
 * added Mac-OS binarys and ".command" batch files
 

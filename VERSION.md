@@ -7,6 +7,10 @@
 * read saber info
 * cross-platform Windows and MAC-OS
 
+### 0.1.0.17  (toolkit r10)
+* added -t, -trans option to transmit any arbitary string to the saber
+* added --slist to get back all lists of sound types from the saber
+
 ### 0.1.0.11  (tooolkit r7)
 * MAC-OS version of send-to0-saber command
 * toolkit r7 now cross platform compatible (MAC-OS and Windows)

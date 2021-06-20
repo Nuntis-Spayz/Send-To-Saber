@@ -1,7 +1,7 @@
 #!/bin/bash
 clear
 cd "$(dirname "$BASH_SOURCE")"
-## ../bin/sendtosaber -s -erase-all
+../bin/sendtosaber -s -erase-all
 
 shopt -s nullglob
 

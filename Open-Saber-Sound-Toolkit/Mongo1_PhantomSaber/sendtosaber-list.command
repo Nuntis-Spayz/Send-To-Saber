@@ -2,4 +2,4 @@
 clear
 cd "$(dirname "$BASH_SOURCE")"
 
-../bin/sendtosaber -slist
+../bin/sendtosaber -list

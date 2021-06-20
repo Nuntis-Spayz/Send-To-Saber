@@ -10,6 +10,9 @@ cp -f ../sendtosaber ./bin-macos/
 rm -dfr $version
 rm -f tmp.dmg
 
+chmod +x ./bin-macos/*.command
+chmod +x ./*/*.command
+
 mkdir $version
 mkdir $version/bin/
 

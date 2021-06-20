@@ -581,21 +581,44 @@ begin
     ser.Connect(port.Trim([':',' ']));
     ser.config(115200, 8, 'N', SB1, False, False);
 
+    ser.Flush;
+    ser.LineBuffer:='';
+    inp:='zz';
+    while (Not inp.IsEmpty()) do
+    begin
+      //ensure the serial buffer is empty
+      inp:= ser.RecvTerminated(50,#10);
+    end;
+    ser.Flush;
+    ser.LineBuffer:='';
+
     ser.SendString('V?'+#10);
-    inp:= ser.RecvTerminated(500,#10);
-    if inp.IsEmpty or (inp<'V=1.') then VerifyPort:=False;
+    inp:= ser.RecvTerminated(1500,#10);
+    if inp.IsEmpty or (inp<'V=1.') then
+    begin
+      VerifyPort:=False;
+      writeln('V? response: '+inp);
+    end;
 
     if VerifyPort then
     begin
       ser.SendString('S?'+#10);
-      inp:= ser.RecvTerminated(500,#10);
-      if inp.IsEmpty or Not(inp.StartsWith('S=')) then VerifyPort:=False;
+      inp:= ser.RecvTerminated(1500,#10);
+      if inp.IsEmpty or Not(inp.StartsWith('S=')) then
+      begin
+        VerifyPort:=False;
+        writeln('S? response: '+inp);
+      end;
 
       if VerifyPort then
       begin
         ser.SendString('WR?'+#10);
-        inp:= ser.RecvTerminated(500,#10);
-        if inp.IsEmpty or Not(inp.StartsWith('OK, Write ')) then VerifyPort:=False;
+        inp:= ser.RecvTerminated(1500,#10);
+        if inp.IsEmpty or Not(inp.StartsWith('OK, Write ')) then
+        begin
+          VerifyPort:=False;
+          writeln('WR? response: '+inp);
+        end;
       end;
     end;
     ser.CloseSocket;
